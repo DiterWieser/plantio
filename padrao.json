@@ -1,0 +1,23 @@
+{
+    "padrao":{
+		"_id":0,
+		"latitude":0.0,
+		"longitude":0.0,
+		"area":1.0,
+		"data_analise":"2025-01-01",
+		"pH":5.5,
+		"nitrogenio":246.0,
+		"fosforo":70.0,
+		"potassio":120.0,
+		"calcio":50.0,
+		"magnesio":14.0,
+		"enxofre":3.0,
+		"boro":0.0,
+		"cobre":0.0,
+		"zinco":0.0,
+		"ferro":0.0,
+		"materia_organica":0.0,
+		"tipo_fertilizante":"tipo",
+		"quantidade_aplicada":0.0
+	}
+}
