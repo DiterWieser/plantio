@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import plotly.express as px
 
 st.set_page_config(layout="wide")
@@ -12,8 +11,11 @@ st.set_page_config(layout="wide")
 path_padrao = "padrao.json"
 padrao = pd.read_json(path_padrao)
 
-path = "plantio_refinado.json"
-df = pd.read_json(path)
+#path_json = "plantio_refinado.json"
+#df = pd.read_json(path_json)
+
+path_csv = "sensor_data.csv"
+df = pd.read_csv(path_csv)
 
 #-----------------------------
 #  Tratamento
@@ -21,13 +23,15 @@ df = pd.read_json(path)
 
 padrao = padrao.T
 
-df = df.T
+#df = df.T
 
-df['coordenada'] = tuple((row['latitude'], row['longitude']) for _, row in df.iterrows())
-df['coordenada_str'] = df['latitude'].astype(str) + ';' + df['longitude'].astype(str)
+df['Latitude'] = round(df['Latitude'], 2)
+df['Longitude'] = round(df['Longitude'], 2)
+df['coordenada'] = tuple((row['Latitude'], row['Longitude']) for _, row in df.iterrows())
+df['coordenada_str'] = df['Latitude'].astype(str) + ';' + df['Longitude'].astype(str)
 
 # Como tratar um string em datetime no pandas?
-df["data_datetime"] = pd.to_datetime(arg=df['data_analise'], dayfirst='year') 
+df["data_datetime"] = pd.to_datetime(arg=df['Data e Hora'], yearfirst=True) 
 
 #-----------------------------
 # Sidebar
@@ -36,10 +40,10 @@ df["data_datetime"] = pd.to_datetime(arg=df['data_analise'], dayfirst='year')
 st.sidebar.title("Filtros")
 
 with st.sidebar:
-    datas = df['data_analise'].unique()
+    datas = df['Data e Hora'].unique()
     f_data = st.selectbox("Datas", datas)
 
-query = '''data_analise in @f_data'''
+query = '''`Data e Hora` in @f_data'''
 
 df = df.query(query)
 
@@ -53,14 +57,14 @@ df = df.query(query)
 
 fig_temperatura = px.bar(df,
                          x='coordenada_str',
-                         y='temperatura',
+                         y='Temperatura',
                          text_auto=True,
                          title="Temperatura do Solo")
 fig_temperatura.update_layout(xaxis_title="Coordenada", yaxis_title="Temperatura")
 
 fig_umidade = px.bar(df,
                      x='coordenada_str',
-                     y='umidade',
+                     y='Umidade',
                      text_auto=True,
                      title="Umidade do Solo")
 fig_umidade.update_layout(xaxis_title="Coordenada", yaxis_title="Umidade")
@@ -74,45 +78,45 @@ fig_ph.update_layout(xaxis_title="Coordenada", yaxis_title="pH")
 
 fig_nitrogenio = px.bar(df,
                          x='coordenada_str',
-                         y='nitrogenio',
+                         y='Nitrogênio',
                          text_auto=True,
                          title='Quantidade de Nitrogênio no Solo')
 fig_nitrogenio.update_layout(xaxis_title="Coordenada", yaxis_title="Nitrogênio")
 
 fig_fosforo = px.bar(df,
                      x='coordenada_str',
-                     y='fosforo',
+                     y='Fósforo',
                      text_auto=True,
                      title="Quantidade de Fósforo no Solo")
 fig_fosforo.update_layout(xaxis_title="Coordenada", yaxis_title="Fósforo")
 
 fig_potassio = px.bar(df,
                       x='coordenada_str',
-                      y='potassio',
+                      y='Potássio',
                       text_auto=True,
                       title="Quantidade de Potássio no Solo")
 fig_potassio.update_layout(xaxis_title="Coordenada", yaxis_title="Potássio")
 
-fig_calcio = px.bar(df,
-                    x='coordenada_str',
-                    y='calcio',
-                    text_auto=True,
-                    title="Quantidade de Cálcio no Solo")
-fig_calcio.update_layout(xaxis_title="Coordenada", yaxis_title="Cálcio")
+#fig_calcio = px.bar(df,
+#                    x='coordenada_str',
+#                    y='calcio',
+#                    text_auto=True,
+#                    title="Quantidade de Cálcio no Solo")
+#fig_calcio.update_layout(xaxis_title="Coordenada", yaxis_title="Cálcio")
 
-fig_magnesio = px.bar(df,
-                      x='coordenada_str',
-                      y='magnesio',
-                      text_auto=True,
-                      title="Quantidade de Magnésio no Solo")
-fig_magnesio.update_layout(xaxis_title="Coordenada", yaxis_title="Magnésio")
+#fig_magnesio = px.bar(df,
+#                      x='coordenada_str',
+#                      y='magnesio',
+#                      text_auto=True,
+#                      title="Quantidade de Magnésio no Solo")
+#fig_magnesio.update_layout(xaxis_title="Coordenada", yaxis_title="Magnésio")
 
-fig_enxofre = px.bar(df,
-                     x='coordenada_str',
-                     y='enxofre',
-                     text_auto=True,
-                     title="Quantidade de Enxofre no Solo")
-fig_enxofre.update_layout(xaxis_title="Coordenada", yaxis_title="Enxofre")
+#fig_enxofre = px.bar(df,
+#                     x='coordenada_str',
+#                     y='enxofre',
+#                     text_auto=True,
+#                     title="Quantidade de Enxofre no Solo")
+#fig_enxofre.update_layout(xaxis_title="Coordenada", yaxis_title="Enxofre")
 
 #-----------------------------
 #  Pagina
@@ -131,14 +135,14 @@ with tab_area:
         st.plotly_chart(fig_temperatura)
         st.plotly_chart(fig_ph)
         st.plotly_chart(fig_fosforo)
-        st.plotly_chart(fig_calcio)
-        st.plotly_chart(fig_enxofre)
+        #st.plotly_chart(fig_calcio)
+        #st.plotly_chart(fig_enxofre)
 
     with col2:
         st.plotly_chart(fig_umidade)
         st.plotly_chart(fig_nitrogenio)
         st.plotly_chart(fig_potassio)
-        st.plotly_chart(fig_magnesio)
+        #st.plotly_chart(fig_magnesio)
 
 with tab_tabela:
     st.title('Tabela')
